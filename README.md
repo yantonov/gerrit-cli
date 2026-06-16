@@ -46,7 +46,8 @@ go build -o gerrit-cli
 - `get-messages <change_id>` - Get review messages
 - `get-patch <change_id>` - Get full patch
 - `get-moab-numbers <change_id>` - Extract MOAB numbers from review messages
-- `resolve-url <url>` - Resolve Gerrit URL to change ID
+- `resolve-change-number <url>` - Extract the change number from a Gerrit URL
+- `resolve-url <url>` - Resolve Gerrit URL to commit Change-Id via Gerrit API
 
 ### Examples
 
@@ -80,6 +81,9 @@ Example:
 }
 ```
 
-# Resolve Gerrit URL to change ID
+# Extract change number from Gerrit URL
+./gerrit-cli resolve-change-number https://your-gerrit-instance.com/c/namespace/project/+/1234567
+
+# Resolve Gerrit URL to commit Change-Id via Gerrit API
 ./gerrit-cli resolve-url https://your-gerrit-instance.com/c/namespace/project/+/1234567
 ```

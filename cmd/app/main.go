@@ -20,11 +20,11 @@ type GerritClient struct {
 func normalizeBaseURL(rawURL string) string {
 	rawURL = strings.TrimSpace(rawURL)
 	rawURL = strings.TrimRight(rawURL, "/")
-	
+
 	if !strings.HasPrefix(rawURL, "http://") && !strings.HasPrefix(rawURL, "https://") {
 		rawURL = "https://" + rawURL
 	}
-	
+
 	return rawURL
 }
 
@@ -33,7 +33,7 @@ func getGerritURL() (string, error) {
 	if baseURL == "" {
 		return "", fmt.Errorf("ERROR: GERRIT_URL not set.\nSet your Gerrit base URL: export GERRIT_URL=your-gerrit-instance.com")
 	}
-	
+
 	return normalizeBaseURL(baseURL), nil
 }
 
@@ -295,14 +295,11 @@ func (c *GerritClient) getMoabNumbers(changeID string) error {
 }
 
 func (c *GerritClient) resolveURL(urlStr string) error {
-	pattern := regexp.MustCompile(`/\+/(\d+)`)
-	match := pattern.FindStringSubmatch(urlStr)
-
-	if len(match) < 2 {
-		return fmt.Errorf("ERROR: Could not extract change number from URL: %s", urlStr)
+	changeNumber, err := extractChangeNumberFromURL(urlStr)
+	if err != nil {
+		return err
 	}
 
-	changeNumber := match[1]
 	response, err := c.get(fmt.Sprintf("changes/%s", changeNumber))
 	if err != nil {
 		return err
@@ -319,6 +316,46 @@ func (c *GerritClient) resolveURL(urlStr string) error {
 	return nil
 }
 
+func extractChangeNumberFromURL(rawURL string) (string, error) {
+	rawURL = strings.TrimSpace(rawURL)
+	if rawURL == "" {
+		return "", fmt.Errorf("ERROR: URL is empty")
+	}
+
+	candidates := []string{rawURL}
+	if decodedURL, err := url.PathUnescape(rawURL); err == nil && decodedURL != rawURL {
+		candidates = append(candidates, decodedURL)
+	}
+
+	patterns := []*regexp.Regexp{
+		regexp.MustCompile(`(?:^|[/?#])\+/(\d+)(?:[/?#&,]|$)`),
+		regexp.MustCompile(`(?:^|[/?#])c/(\d+)(?:[/?#&,]|$)`),
+		regexp.MustCompile(`(?:^|[/?#])q/(\d+)(?:[/?#&,]|$)`),
+		regexp.MustCompile(`[?&]q=(?:change:)?(\d+)(?:[&#]|$)`),
+	}
+
+	for _, candidate := range candidates {
+		for _, pattern := range patterns {
+			match := pattern.FindStringSubmatch(candidate)
+			if len(match) == 2 {
+				return match[1], nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("ERROR: Could not extract change number from URL: %s", rawURL)
+}
+
+func resolveChangeNumber(urlStr string) error {
+	changeNumber, err := extractChangeNumberFromURL(urlStr)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(changeNumber)
+	return nil
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Fprintf(os.Stderr, "Usage: %s <command> [args...]\n", os.Args[0])
@@ -330,8 +367,24 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  get-messages <change_id>\n")
 		fmt.Fprintf(os.Stderr, "  get-patch <change_id>\n")
 		fmt.Fprintf(os.Stderr, "  get-moab-numbers <change_id>\n")
+		fmt.Fprintf(os.Stderr, "  resolve-change-number <url>\n")
 		fmt.Fprintf(os.Stderr, "  resolve-url <url>\n")
 		os.Exit(1)
+	}
+
+	command := os.Args[1]
+	args := os.Args[2:]
+
+	if command == "resolve-change-number" {
+		if len(args) < 1 {
+			fmt.Fprintln(os.Stderr, "ERROR: resolve-change-number requires <url>")
+			os.Exit(1)
+		}
+		if err := resolveChangeNumber(args[0]); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		return
 	}
 
 	client, err := NewGerritClient()
@@ -339,9 +392,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-
-	command := os.Args[1]
-	args := os.Args[2:]
 
 	switch command {
 	case "get-change":
