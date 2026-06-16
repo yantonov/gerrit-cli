@@ -2,7 +2,7 @@
 
 A Go-based command-line tool for interacting with Gerrit REST API.  
 The intent was to use it as a skill for claude code, etc.  
-Intentionally only read access is supported now.  
+Most commands are read-only, with a small write command for publishing review comments.
 
 ## Setup
 
@@ -46,6 +46,7 @@ go build -o gerrit-cli
 - `get-messages <change_id>` - Get review messages
 - `get-patch <change_id>` - Get full patch
 - `get-moab-numbers <change_id>` - Extract MOAB numbers from review messages
+- `post-comment <change_id> <comment>` - Publish a top-level review comment
 - `resolve-change-number <url>` - Extract the change number from a Gerrit URL
 - `resolve-url <url>` - Resolve Gerrit URL to commit Change-Id via Gerrit API
 
@@ -72,6 +73,9 @@ go build -o gerrit-cli
 
 # Get MOAB numbers
 ./gerrit-cli get-moab-numbers I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+
+# Publish a top-level review comment
+./gerrit-cli post-comment I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3 "Looks good to me"
 
 Example:
 ```
