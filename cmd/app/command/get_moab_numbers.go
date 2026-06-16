@@ -28,19 +28,12 @@ func (c *GerritClient) getMoabNumbers(changeID string) error {
 		return err
 	}
 
-	moabNumbers := map[string]int{}
-	pattern := regexp.MustCompile(`This review has been processed in (\w+) MOAB #(\d+)`)
+	moabNumbers := map[string]string{}
 
 	for _, comment := range data {
 		if message, ok := comment["message"].(string); ok {
-			matches := pattern.FindAllStringSubmatch(message, -1)
-			for _, match := range matches {
-				if len(match) >= 3 {
-					moabType := match[1]
-					var moabNumber int
-					fmt.Sscanf(match[2], "%d", &moabNumber)
-					moabNumbers[moabType] = moabNumber
-				}
+			for moabType, moabNumber := range extractMoabNumbers(message) {
+				moabNumbers[moabType] = moabNumber
 			}
 		}
 	}
@@ -51,4 +44,20 @@ func (c *GerritClient) getMoabNumbers(changeID string) error {
 	}
 	fmt.Println(string(output))
 	return nil
+}
+
+// moabNumberPattern matches the CI bot's free-text announcement, e.g.
+// "This review has been processed in CSHARP MOAB #123".
+var moabNumberPattern = regexp.MustCompile(`This review has been processed in (\w+) MOAB #(\d+)`)
+
+func extractMoabNumbers(message string) map[string]string {
+	moabNumbers := map[string]string{}
+
+	for _, match := range moabNumberPattern.FindAllStringSubmatch(message, -1) {
+		if len(match) >= 3 {
+			moabNumbers[match[1]] = match[2]
+		}
+	}
+
+	return moabNumbers
 }

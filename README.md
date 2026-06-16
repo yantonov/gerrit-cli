@@ -46,6 +46,7 @@ go build -o gerrit-cli
 - `get-messages <change_id>` - Get review messages
 - `get-patch <change_id>` - Get full patch
 - `get-moab-numbers <change_id>` - Extract MOAB numbers from review messages
+- `get-publish-version <change_id>` - Extract published artifact versions from review messages
 - `post-comment <change_id> <comment>` - Publish a top-level review comment
 - `resolve-change-number <url>` - Extract the change number from a Gerrit URL
 - `resolve-change-id <url>` - Resolve Gerrit URL to commit Change-Id via Gerrit API
@@ -74,16 +75,27 @@ go build -o gerrit-cli
 # Get MOAB numbers
 ./gerrit-cli get-moab-numbers I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 
-# Publish a top-level review comment
-./gerrit-cli post-comment I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3 "Looks good to me"
+Example:
+```
+{
+  "CSHARP": "123",
+  "JAVA": "234"
+}
+```
+
+# Get published artifact versions
+./gerrit-cli get-publish-version I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 
 Example:
 ```
 {
-  "CSHARP": 123,
-  "JAVA": 234
+  "CSHARP": "1.1948302.1.44265-review",
+  "JAVA": "2.5550123.1.999-review"
 }
 ```
+
+# Publish a top-level review comment
+./gerrit-cli post-comment I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3 "Looks good to me"
 
 # Extract change number from Gerrit URL
 ./gerrit-cli resolve-change-number https://your-gerrit-instance.com/c/namespace/project/+/1234567

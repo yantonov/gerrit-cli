@@ -1,2 +1,5 @@
 # binary artifacts
 /target/*
+
+# ide specific files
+/.idea/
