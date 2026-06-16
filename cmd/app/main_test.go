@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"strings"
 	"testing"
 )
 
@@ -129,8 +128,30 @@ func TestPostCommentPublishesReviewMessage(t *testing.T) {
 	if gotMessage != "Looks good" {
 		t.Fatalf("message = %q, want %q", gotMessage, "Looks good")
 	}
-	if !strings.Contains(output, `"ready": true`) {
-		t.Fatalf("output = %q, want formatted Gerrit response", output)
+	if output != "[OK] Comment is successfully posted\n" {
+		t.Fatalf("output = %q, want success message", output)
+	}
+}
+
+func TestPostCommentReturnsStatusCodeError(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "failed")
+	}))
+	defer server.Close()
+
+	client := &GerritClient{auth: "token", baseURL: server.URL}
+	output, err := captureStdout(t, func() error {
+		return client.postComment("Iabc123", "Looks good")
+	})
+	if err == nil {
+		t.Fatal("postComment returned nil error for non-200 response")
+	}
+	if err.Error() != "Cannot post comment, status code=500" {
+		t.Fatalf("error = %q, want status code error", err)
+	}
+	if output != "" {
+		t.Fatalf("output = %q, want empty stdout", output)
 	}
 }
 

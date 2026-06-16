@@ -76,16 +76,16 @@ func (c *GerritClient) get(endpoint string) (string, error) {
 	return stripGerritResponsePrefix(result), nil
 }
 
-func (c *GerritClient) post(endpoint string, payload interface{}) (string, error) {
+func (c *GerritClient) post(endpoint string, payload interface{}) (int, error) {
 	requestBody, err := json.Marshal(payload)
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	url := fmt.Sprintf("%s/a/%s", c.baseURL, endpoint)
 	req, err := http.NewRequest("POST", url, bytes.NewReader(requestBody))
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Basic %s", c.auth))
 	req.Header.Set("Content-Type", "application/json")
@@ -93,24 +93,15 @@ func (c *GerritClient) post(endpoint string, payload interface{}) (string, error
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	result := string(body)
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		message := strings.TrimSpace(stripGerritResponsePrefix(result))
-		if message == "" {
-			message = resp.Status
-		}
-		return "", fmt.Errorf("ERROR: Gerrit POST %s failed: %s", endpoint, message)
+	if _, err := io.ReadAll(resp.Body); err != nil {
+		return 0, err
 	}
 
-	return stripGerritResponsePrefix(result), nil
+	return resp.StatusCode, nil
 }
 
 func stripGerritResponsePrefix(result string) string {
@@ -130,7 +121,7 @@ func (c *GerritClient) postComment(changeID, comment string) error {
 		return fmt.Errorf("ERROR: comment is empty")
 	}
 
-	response, err := c.post(
+	statusCode, err := c.post(
 		fmt.Sprintf("changes/%s/revisions/current/review", changeID),
 		map[string]string{"message": comment},
 	)
@@ -138,23 +129,12 @@ func (c *GerritClient) postComment(changeID, comment string) error {
 		return err
 	}
 
-	if strings.TrimSpace(response) == "" {
-		fmt.Println("Comment posted")
+	if statusCode == http.StatusOK {
+		fmt.Println("[OK] Comment is successfully posted")
 		return nil
 	}
 
-	var data interface{}
-	if err := json.Unmarshal([]byte(response), &data); err != nil {
-		fmt.Println(response)
-		return nil
-	}
-
-	output, err := json.MarshalIndent(data, "", "  ")
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(output))
-	return nil
+	return fmt.Errorf("Cannot post comment, status code=%d", statusCode)
 }
 
 func (c *GerritClient) getChangeDetail(changeID string) error {
@@ -369,7 +349,7 @@ func (c *GerritClient) getMoabNumbers(changeID string) error {
 	return nil
 }
 
-func (c *GerritClient) resolveURL(urlStr string) error {
+func (c *GerritClient) resolveChangeID(urlStr string) error {
 	changeNumber, err := extractChangeNumberFromURL(urlStr)
 	if err != nil {
 		return err
@@ -444,7 +424,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  get-moab-numbers <change_id>\n")
 		fmt.Fprintf(os.Stderr, "  post-comment <change_id> <comment>\n")
 		fmt.Fprintf(os.Stderr, "  resolve-change-number <url>\n")
-		fmt.Fprintf(os.Stderr, "  resolve-url <url>\n")
+		fmt.Fprintf(os.Stderr, "  resolve-change-id <url>\n")
 		os.Exit(1)
 	}
 
@@ -518,12 +498,12 @@ func main() {
 			os.Exit(1)
 		}
 		err = client.postComment(args[0], strings.Join(args[1:], " "))
-	case "resolve-url":
+	case "resolve-change-id":
 		if len(args) < 1 {
-			fmt.Fprintln(os.Stderr, "ERROR: resolve-url requires <url>")
+			fmt.Fprintln(os.Stderr, "ERROR: resolve-change-id requires <url>")
 			os.Exit(1)
 		}
-		err = client.resolveURL(args[0])
+		err = client.resolveChangeID(args[0])
 	default:
 		fmt.Fprintf(os.Stderr, "ERROR: Unknown command '%s'\n", command)
 		os.Exit(1)
