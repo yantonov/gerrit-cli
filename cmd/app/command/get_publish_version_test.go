@@ -63,29 +63,72 @@ func TestExtractPublishVersions(t *testing.T) {
 	}
 }
 
-// TestExtractPublishVersionsAcrossMessages mirrors how getPublishVersion merges
-// the per-message results of a full review thread. Only the "published" message
-// contributes, so the presubmit MOAB_ID (1.1948302.1.1095021-review) and the
-// publish-start version are ignored and the result is the published version.
-func TestExtractPublishVersionsAcrossMessages(t *testing.T) {
-	messages := []string{
-		"Uploaded patch set 1.",
-		"Patch Set 1: Code-Review-1",
-		"CSHARP Presubmit [submitted](https://build-moab.crto.in/job/moabs/job/csharp-release/job/presubmit/job/MOAB-presubmit/1095021/)\nWaiting for available executor.",
-		"Patch Set 1: Verified+1\n\n✅ **Presubmit succeeded: [All scans](https://build-scans.crto.in/scans?search.names=MOAB_ID&search.values=1.1948302.1.1095021-review)** - [Job](https://build-moab.crto.in/job/moabs/job/csharp-release/job/presubmit/job/MOAB-presubmit/1095021/)",
-		"CSHARP Starting [publish of version 1.1948302.1.44265-review](https://build-moab.crto.in/job/moabs/job/csharp-release/job/presubmit/job/MOAB-presubmit-publish/44265/)\nWaiting for available executor.",
-		"CSHARP Artifacts have been published in Nexus with version 1.1948302.1.44265-review",
+func TestExtractVersionsAfterLastPleasePublish(t *testing.T) {
+	tests := []struct {
+		name     string
+		messages []string
+		want     map[string]string
+	}{
+		{
+			name: "no please-publish returns empty",
+			messages: []string{
+				"Uploaded patch set 1.",
+				"Patch Set 1: Code-Review-1",
+				"CSHARP Presubmit [submitted](https://build-moab.crto.in/job/moabs/job/csharp-release/job/presubmit/job/MOAB-presubmit/1095021/)\nWaiting for available executor.",
+				"Patch Set 1: Verified+1\n\n✅ **Presubmit succeeded: [All scans](https://build-scans.crto.in/scans?search.names=MOAB_ID&search.values=1.1948302.1.1095021-review)** - [Job](https://build-moab.crto.in/job/moabs/job/csharp-release/job/presubmit/job/MOAB-presubmit/1095021/)",
+				"CSHARP Starting [publish of version 1.1948302.1.44265-review](https://build-moab.crto.in/job/moabs/job/csharp-release/job/presubmit/job/MOAB-presubmit-publish/44265/)\nWaiting for available executor.",
+				"CSHARP Artifacts have been published in Nexus with version 1.1948302.1.44265-review",
+			},
+			want: map[string]string{},
+		},
+		{
+			name: "versions before please-publish are ignored",
+			messages: []string{
+				"CSHARP Artifacts have been published in Nexus with version 1.1948302.1.11111-review",
+				"please publish",
+				"CSHARP Artifacts have been published in Nexus with version 1.1948302.1.44265-review",
+			},
+			want: map[string]string{"CSHARP": "1.1948302.1.44265-review"},
+		},
+		{
+			name: "last please-publish wins when there are multiple",
+			messages: []string{
+				"please publish",
+				"CSHARP Artifacts have been published in Nexus with version 1.1948302.1.11111-review",
+				"please publish",
+				"CSHARP Artifacts have been published in Nexus with version 1.1948302.1.44265-review",
+			},
+			want: map[string]string{"CSHARP": "1.1948302.1.44265-review"},
+		},
+		{
+			name: "please-publish with no subsequent published message returns empty",
+			messages: []string{
+				"CSHARP Artifacts have been published in Nexus with version 1.1948302.1.11111-review",
+				"please publish",
+			},
+			want: map[string]string{},
+		},
+		{
+			name: "full review thread with please-publish",
+			messages: []string{
+				"Uploaded patch set 1.",
+				"Patch Set 1: Code-Review-1",
+				"CSHARP Presubmit [submitted](https://build-moab.crto.in/job/moabs/job/csharp-release/job/presubmit/job/MOAB-presubmit/1095021/)\nWaiting for available executor.",
+				"Patch Set 1: Verified+1\n\n✅ **Presubmit succeeded: [All scans](https://build-scans.crto.in/scans?search.names=MOAB_ID&search.values=1.1948302.1.1095021-review)** - [Job](https://build-moab.crto.in/job/moabs/job/csharp-release/job/presubmit/job/MOAB-presubmit/1095021/)",
+				"please publish",
+				"CSHARP Starting [publish of version 1.1948302.1.44265-review](https://build-moab.crto.in/job/moabs/job/csharp-release/job/presubmit/job/MOAB-presubmit-publish/44265/)\nWaiting for available executor.",
+				"CSHARP Artifacts have been published in Nexus with version 1.1948302.1.44265-review",
+			},
+			want: map[string]string{"CSHARP": "1.1948302.1.44265-review"},
+		},
 	}
 
-	merged := map[string]string{}
-	for _, message := range messages {
-		for lang, version := range extractPublishVersions(message) {
-			merged[lang] = version
-		}
-	}
-
-	want := map[string]string{"CSHARP": "1.1948302.1.44265-review"}
-	if !reflect.DeepEqual(merged, want) {
-		t.Fatalf("merged publish versions = %v, want %v", merged, want)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			got := extractVersionsAfterLastPleasePublish(test.messages)
+			if !reflect.DeepEqual(got, test.want) {
+				t.Fatalf("extractVersionsAfterLastPleasePublish() = %v, want %v", got, test.want)
+			}
+		})
 	}
 }

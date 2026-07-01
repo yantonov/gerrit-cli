@@ -29,15 +29,14 @@ func (c *GerritClient) getPublishVersion(changeID string) error {
 		return err
 	}
 
-	versions := map[string]string{}
-
+	messages := make([]string, 0, len(data))
 	for _, comment := range data {
 		if message, ok := comment["message"].(string); ok {
-			for lang, version := range extractPublishVersions(message) {
-				versions[lang] = version
-			}
+			messages = append(messages, message)
 		}
 	}
+
+	versions := extractVersionsAfterLastPleasePublish(messages)
 
 	output, err := json.MarshalIndent(versions, "", "  ")
 	if err != nil {
@@ -45,6 +44,28 @@ func (c *GerritClient) getPublishVersion(changeID string) error {
 	}
 	fmt.Println(string(output))
 	return nil
+}
+
+var pleasePublishRegexPattern = regexp.MustCompile(`(?i)\bplease\s+publish\b`)
+
+func extractVersionsAfterLastPleasePublish(messages []string) map[string]string {
+	start := -1
+	for i, msg := range messages {
+		if pleasePublishRegexPattern.MatchString(msg) {
+			start = i + 1
+		}
+	}
+
+	versions := map[string]string{}
+	if start == -1 {
+		return versions
+	}
+	for _, msg := range messages[start:] {
+		for lang, version := range extractPublishVersions(msg) {
+			versions[lang] = version
+		}
+	}
+	return versions
 }
 
 // The CI bot no longer posts a free-text "CSHARP MOAB #123" phrase. Instead the
