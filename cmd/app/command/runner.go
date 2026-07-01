@@ -12,6 +12,7 @@ type Command struct {
 }
 
 var commandNames = []string{
+	"keychain",
 	"get-change",
 	"get-files",
 	"get-commit",
@@ -26,6 +27,7 @@ var commandNames = []string{
 }
 
 var commands = map[string]Command{
+	"keychain":              keychainCommand,
 	"get-change":            getChangeCommand,
 	"get-files":             getFilesCommand,
 	"get-commit":            getCommitCommand,
@@ -53,20 +55,20 @@ func Run(args []string) {
 	commandName := args[1]
 	commandArgs := args[2:]
 
-	if commandName == "resolve-change-number" {
-		runCommand(commands[commandName], nil, commandArgs)
+	command, ok := commands[commandName]
+	if !ok {
+		fmt.Fprintf(os.Stderr, "ERROR: Unknown command '%s'\n", commandName)
+		os.Exit(1)
+	}
+
+	if !command.requiresClient {
+		runCommand(command, nil, commandArgs)
 		return
 	}
 
 	client, err := NewGerritClient()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	command, ok := commands[commandName]
-	if !ok {
-		fmt.Fprintf(os.Stderr, "ERROR: Unknown command '%s'\n", commandName)
 		os.Exit(1)
 	}
 

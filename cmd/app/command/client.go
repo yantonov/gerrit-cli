@@ -2,6 +2,7 @@ package command
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -36,15 +37,33 @@ func getGerritURL() (string, error) {
 }
 
 func NewGerritClient() (*GerritClient, error) {
-	auth := os.Getenv("SECRET_GERRIT_AUTH_TOKEN")
-	if auth == "" {
-		return nil, fmt.Errorf("ERROR: SECRET_GERRIT_AUTH_TOKEN not set.\nGet credentials from your Gerrit instance at: /settings/#HTTPCredentials\nThen run: export SECRET_GERRIT_AUTH_TOKEN=$(echo -n 'user:pass' | base64)")
-	}
-
 	baseURL, err := getGerritURL()
 	if err != nil {
 		return nil, err
 	}
+
+	host, err := hostFromBaseURL(baseURL)
+	if err != nil {
+		return nil, err
+	}
+
+	username, err := getKeychainValue(host, keyringUsernameKey)
+	if err != nil {
+		return nil, fmt.Errorf("ERROR: failed to read username from keychain: %v", err)
+	}
+	if username == "" {
+		return nil, fmt.Errorf("ERROR: no username set for host %s.\nGet credentials from your Gerrit instance at: /settings/#HTTPCredentials\nThen run: gerrit-cli keychain set username", host)
+	}
+
+	password, err := getKeychainValue(host, keyringPasswordKey)
+	if err != nil {
+		return nil, fmt.Errorf("ERROR: failed to read password from keychain: %v", err)
+	}
+	if password == "" {
+		return nil, fmt.Errorf("ERROR: no password set for host %s.\nGet credentials from your Gerrit instance at: /settings/#HTTPCredentials\nThen run: gerrit-cli keychain set password", host)
+	}
+
+	auth := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))
 
 	return &GerritClient{auth: auth, baseURL: baseURL}, nil
 }

@@ -20,10 +20,16 @@ export GERRIT_URL=http://your-gerrit-instance.com
 
 2. Get your HTTP credentials from: `https://your-gerrit-instance.com/settings/#HTTPCredentials`
 
-3. Set the authentication environment variable:
+3. Store your credentials in the OS keychain, scoped to the host from `GERRIT_URL`. Both values are read from an interactive, hidden prompt (input is not echoed):
 ```bash
-export SECRET_GERRIT_AUTH_TOKEN=$(echo -n 'username:password' | base64)
+gerrit-cli keychain set username
+# Username: <hidden prompt>
+
+gerrit-cli keychain set password
+# Password: <hidden prompt>
 ```
+
+Credentials are stored per Gerrit host, so switching `GERRIT_URL` to a different instance uses a different set of stored credentials. Use `gerrit-cli keychain status` to check what's currently configured, `gerrit-cli keychain remove <username|password>` to drop a single value, or `gerrit-cli keychain clear` to drop both.
 
 ## Build
 
@@ -39,6 +45,11 @@ go build -o gerrit-cli
 
 ### Available Commands
 
+- `keychain set username` - Store the username for the current `GERRIT_URL` host (read from an interactive, hidden prompt)
+- `keychain set password` - Store the password for the current `GERRIT_URL` host (read from an interactive, hidden prompt)
+- `keychain remove <username|password>` - Remove a single stored value for the current host
+- `keychain clear` - Remove both stored values for the current host
+- `keychain status` - Show whether username/password are set for the current host (values are never printed)
 - `get-change <change_id>` - Get detailed change information
 - `get-files <change_id>` - Get list of files in a change
 - `get-commit <change_id>` - Get commit message
@@ -54,6 +65,19 @@ go build -o gerrit-cli
 ### Examples
 
 ```bash
+# Store credentials for the current GERRIT_URL host
+./gerrit-cli keychain set username
+./gerrit-cli keychain set password
+
+# Check what's currently stored
+./gerrit-cli keychain status
+
+# Remove a single stored value
+./gerrit-cli keychain remove password
+
+# Remove both stored values
+./gerrit-cli keychain clear
+
 # Get change details
 ./gerrit-cli get-change I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 
