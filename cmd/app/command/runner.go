@@ -55,6 +55,11 @@ func Run(args []string) {
 	commandName := args[1]
 	commandArgs := args[2:]
 
+	if commandName == "--help" || commandName == "-h" || commandName == "help" {
+		printUsage(programName)
+		return
+	}
+
 	command, ok := commands[commandName]
 	if !ok {
 		fmt.Fprintf(os.Stderr, "ERROR: Unknown command '%s'\n", commandName)
