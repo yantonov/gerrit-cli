@@ -4,7 +4,7 @@ set -o errexit -o nounset
 cd "$(dirname "$0")/.."
 
 artifact="target/gerrit-cli"
-install_dir="${HOME}/bin"
+install_dir="${HOME}/.local/bin"
 install_path="${install_dir}/gerrit-cli"
 
 if [ ! -f "$artifact" ]; then
