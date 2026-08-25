@@ -31,6 +31,8 @@ gerrit-cli keychain set password
 
 Credentials are stored per Gerrit host, so switching `GERRIT_URL` to a different instance uses a different set of stored credentials. Use `gerrit-cli keychain status` to check what's currently configured, `gerrit-cli keychain remove <username|password>` to drop a single value, or `gerrit-cli keychain clear` to drop both.
 
+The keychain is the macOS Keychain, the Windows Credential Manager, or the freedesktop Secret Service on Linux. If none is reachable, every command that touches credentials fails with a message naming the platform and how to get a working store - on Linux that usually means starting a keyring daemon such as gnome-keyring, and running under a D-Bus session (`dbus-run-session -- gerrit-cli <command>`) when connected over SSH.
+
 ## Build
 
 ```bash

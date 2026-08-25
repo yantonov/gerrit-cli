@@ -1,7 +1,9 @@
 package command
 
 import (
+	"errors"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -302,4 +304,87 @@ func withStdinInput(t *testing.T, input string, fn func()) {
 	}()
 
 	fn()
+}
+
+func TestAsKeychainErrorDetectsUnavailableStore(t *testing.T) {
+	tests := []struct {
+		name string
+		err  error
+		want bool
+	}{
+		{name: "unsupported platform", err: keyring.ErrUnsupportedPlatform, want: true},
+		{name: "no secret service provider", err: errors.New("The name org.freedesktop.secrets was not provided by any .service files"), want: true},
+		{name: "no session bus", err: errors.New("dbus: couldn't determine address of session bus"), want: true},
+		{name: "security binary missing", err: errors.New("exec: \"/usr/bin/security\": executable file not found in $PATH"), want: true},
+		{name: "ordinary failure", err: errors.New("user canceled the operation"), want: false},
+		{name: "no error", err: nil, want: false},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var unavailable *keychainUnavailableError
+			if got := errors.As(asKeychainError(test.err), &unavailable); got != test.want {
+				t.Fatalf("asKeychainError(%v) unavailable = %v, want %v", test.err, got, test.want)
+			}
+		})
+	}
+}
+
+func TestKeychainUnavailableErrorExplainsSetup(t *testing.T) {
+	err := asKeychainError(keyring.ErrUnsupportedPlatform)
+
+	message := err.Error()
+	if !strings.Contains(message, "no keychain is available on this system") {
+		t.Fatalf("error = %q, want it to state that no keychain is available", message)
+	}
+	if !strings.Contains(message, runtime.GOOS) {
+		t.Fatalf("error = %q, want it to name the platform %q", message, runtime.GOOS)
+	}
+	if !strings.Contains(message, keychainSetupHint()) {
+		t.Fatalf("error = %q, want it to include the setup hint", message)
+	}
+	if !errors.Is(err, keyring.ErrUnsupportedPlatform) {
+		t.Fatal("asKeychainError() dropped the underlying cause")
+	}
+}
+
+func TestKeychainErrorKeepsUnavailableMessage(t *testing.T) {
+	unavailable := asKeychainError(keyring.ErrUnsupportedPlatform)
+
+	wrapped := keychainError("read username from keychain", unavailable)
+	if wrapped.Error() != unavailable.Error() {
+		t.Fatalf("keychainError() = %q, want the unavailable message verbatim %q", wrapped, unavailable)
+	}
+
+	wrapped = keychainError("read username from keychain", errors.New("boom"))
+	if wrapped.Error() != "ERROR: failed to read username from keychain: boom" {
+		t.Fatalf("keychainError() = %q, want the action-prefixed message", wrapped)
+	}
+}
+
+func TestCommandsReportUnavailableKeychain(t *testing.T) {
+	keyring.MockInitWithError(keyring.ErrUnsupportedPlatform)
+	defer keyring.MockInit()
+
+	t.Setenv("GERRIT_URL", "gerrit.unavailable.example.com")
+
+	assertUnavailable := func(t *testing.T, name string, err error) {
+		t.Helper()
+		if err == nil {
+			t.Fatalf("%s returned nil error with no keychain available", name)
+		}
+		if !strings.Contains(err.Error(), "no keychain is available on this system") {
+			t.Fatalf("%s error = %q, want the no-keychain message", name, err)
+		}
+	}
+
+	withStdinInput(t, "alice\n", func() {
+		assertUnavailable(t, "keychainSet()", keychainSet([]string{"username"}))
+	})
+	assertUnavailable(t, "keychainRemove()", keychainRemove([]string{"username"}))
+	assertUnavailable(t, "keychainClear()", keychainClear(nil))
+	assertUnavailable(t, "keychainStatus()", keychainStatus(nil))
+
+	_, err := NewGerritClient()
+	assertUnavailable(t, "NewGerritClient()", err)
 }

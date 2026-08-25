@@ -49,7 +49,7 @@ func NewGerritClient() (*GerritClient, error) {
 
 	username, err := getKeychainValue(host, keyringUsernameKey)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: failed to read username from keychain: %v", err)
+		return nil, keychainError("read username from keychain", err)
 	}
 	if username == "" {
 		return nil, fmt.Errorf("ERROR: no username set for host %s.\nGet credentials from your Gerrit instance at: /settings/#HTTPCredentials\nThen run: gerrit-cli keychain set username", host)
@@ -57,7 +57,7 @@ func NewGerritClient() (*GerritClient, error) {
 
 	password, err := getKeychainValue(host, keyringPasswordKey)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR: failed to read password from keychain: %v", err)
+		return nil, keychainError("read password from keychain", err)
 	}
 	if password == "" {
 		return nil, fmt.Errorf("ERROR: no password set for host %s.\nGet credentials from your Gerrit instance at: /settings/#HTTPCredentials\nThen run: gerrit-cli keychain set password", host)

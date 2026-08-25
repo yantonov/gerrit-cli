@@ -68,7 +68,7 @@ func keychainSet(args []string) error {
 	}
 
 	if err := setKeychainValue(host, field, value); err != nil {
-		return fmt.Errorf("ERROR: failed to save %s to keychain: %v", field, err)
+		return keychainError(fmt.Sprintf("save %s to keychain", field), err)
 	}
 
 	fmt.Printf("[OK] %s saved to keychain for host %s\n", field, host)
@@ -91,7 +91,7 @@ func keychainRemove(args []string) error {
 	}
 
 	if err := deleteKeychainValue(host, field); err != nil {
-		return fmt.Errorf("ERROR: failed to remove %s from keychain: %v", field, err)
+		return keychainError(fmt.Sprintf("remove %s from keychain", field), err)
 	}
 
 	fmt.Printf("[OK] %s removed from keychain for host %s\n", field, host)
@@ -109,10 +109,10 @@ func keychainClear(args []string) error {
 	}
 
 	if err := deleteKeychainValue(host, keyringUsernameKey); err != nil {
-		return fmt.Errorf("ERROR: failed to remove username from keychain: %v", err)
+		return keychainError("remove username from keychain", err)
 	}
 	if err := deleteKeychainValue(host, keyringPasswordKey); err != nil {
-		return fmt.Errorf("ERROR: failed to remove password from keychain: %v", err)
+		return keychainError("remove password from keychain", err)
 	}
 
 	fmt.Printf("[OK] keychain cleared for host %s\n", host)
@@ -131,11 +131,11 @@ func keychainStatus(args []string) error {
 
 	username, err := getKeychainValue(host, keyringUsernameKey)
 	if err != nil {
-		return fmt.Errorf("ERROR: failed to read username from keychain: %v", err)
+		return keychainError("read username from keychain", err)
 	}
 	password, err := getKeychainValue(host, keyringPasswordKey)
 	if err != nil {
-		return fmt.Errorf("ERROR: failed to read password from keychain: %v", err)
+		return keychainError("read password from keychain", err)
 	}
 
 	fmt.Printf("Host: %s\n", host)
