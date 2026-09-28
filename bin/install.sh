@@ -1,7 +1,8 @@
 #!/usr/bin/env sh
 set -o errexit -o nounset
 
-cd "$(dirname "$0")/.."
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+cd "$script_dir/.."
 
 artifact="target/gerrit-cli"
 install_dir="${HOME}/.local/bin"
@@ -9,8 +10,8 @@ install_path="${install_dir}/gerrit-cli"
 
 if [ ! -f "$artifact" ]; then
   echo "Missing binary artifact: $artifact" >&2
-  echo "Run bin/build.sh first." >&2
-  exit 1
+  echo "Building it now..." >&2
+  "$script_dir/build.sh"
 fi
 
 mkdir -p "$install_dir"
