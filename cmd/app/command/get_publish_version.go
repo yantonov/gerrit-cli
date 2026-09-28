@@ -8,13 +8,14 @@ import (
 )
 
 var getPublishVersionCommand = Command{
-	usage:          "get-publish-version <change_id>",
+	usage:          "get-publish-version (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("ERROR: get-publish-version requires <change_id>")
+		changeID, _, err := parseChangeIDFlag("get-publish-version", args)
+		if err != nil {
+			return err
 		}
-		return client.getPublishVersion(args[0])
+		return client.getPublishVersion(changeID)
 	},
 }
 

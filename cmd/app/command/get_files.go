@@ -6,13 +6,14 @@ import (
 )
 
 var getFilesCommand = Command{
-	usage:          "get-files <change_id>",
+	usage:          "get-files (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("ERROR: get-files requires <change_id>")
+		changeID, _, err := parseChangeIDFlag("get-files", args)
+		if err != nil {
+			return err
 		}
-		return client.getFiles(args[0])
+		return client.getFiles(changeID)
 	},
 }
 

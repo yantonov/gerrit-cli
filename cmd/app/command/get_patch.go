@@ -7,13 +7,14 @@ import (
 )
 
 var getPatchCommand = Command{
-	usage:          "get-patch <change_id>",
+	usage:          "get-patch (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("ERROR: get-patch requires <change_id>")
+		changeID, _, err := parseChangeIDFlag("get-patch", args)
+		if err != nil {
+			return err
 		}
-		return client.getPatch(args[0])
+		return client.getPatch(changeID)
 	},
 }
 

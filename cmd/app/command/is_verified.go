@@ -6,13 +6,14 @@ import (
 )
 
 var isVerifiedCommand = Command{
-	usage:          "is-verified <change_id>",
+	usage:          "is-verified (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("ERROR: is-verified requires <change_id>")
+		changeID, _, err := parseChangeIDFlag("is-verified", args)
+		if err != nil {
+			return err
 		}
-		return client.isVerified(args[0])
+		return client.isVerified(changeID)
 	},
 }
 

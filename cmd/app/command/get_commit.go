@@ -6,13 +6,14 @@ import (
 )
 
 var getCommitCommand = Command{
-	usage:          "get-commit <change_id>",
+	usage:          "get-commit (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("ERROR: get-commit requires <change_id>")
+		changeID, _, err := parseChangeIDFlag("get-commit", args)
+		if err != nil {
+			return err
 		}
-		return client.getCommit(args[0])
+		return client.getCommit(changeID)
 	},
 }
 

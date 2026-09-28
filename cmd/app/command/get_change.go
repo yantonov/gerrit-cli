@@ -6,13 +6,14 @@ import (
 )
 
 var getChangeCommand = Command{
-	usage:          "get-change <change_id>",
+	usage:          "get-change (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		if len(args) < 1 {
-			return fmt.Errorf("ERROR: get-change requires <change_id>")
+		changeID, _, err := parseChangeIDFlag("get-change", args)
+		if err != nil {
+			return err
 		}
-		return client.getChangeDetail(args[0])
+		return client.getChangeDetail(changeID)
 	},
 }
 

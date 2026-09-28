@@ -52,18 +52,20 @@ go build -o gerrit-cli
 - `keychain remove <username|password>` - Remove a single stored value for the current host
 - `keychain clear` - Remove both stored values for the current host
 - `keychain status` - Show whether username/password are set for the current host (values are never printed)
-- `get-change <change_id>` - Get detailed change information
-- `get-files <change_id>` - Get list of files in a change
-- `get-commit <change_id>` - Get commit message
-- `get-diff <change_id> <file_path>` - Get file diff
-- `get-messages <change_id>` - Get review messages
-- `get-patch <change_id>` - Get full patch
-- `get-moab-numbers <change_id>` - Extract MOAB numbers from review messages
-- `get-publish-version <change_id>` - Extract published artifact versions from review messages
-- `is-verified <change_id>` - Check whether the Verified label is set on the latest patch set
-- `post-comment <change_id> <comment>` - Publish a top-level review comment
+- `get-change (--change-id <change_id> | --review-url <url>)` - Get detailed change information
+- `get-files (--change-id <change_id> | --review-url <url>)` - Get list of files in a change
+- `get-commit (--change-id <change_id> | --review-url <url>)` - Get commit message
+- `get-diff (--change-id <change_id> | --review-url <url>) <file_path>` - Get file diff
+- `get-messages (--change-id <change_id> | --review-url <url>)` - Get review messages
+- `get-patch (--change-id <change_id> | --review-url <url>)` - Get full patch
+- `get-moab-numbers (--change-id <change_id> | --review-url <url>)` - Extract MOAB numbers from review messages
+- `get-publish-version (--change-id <change_id> | --review-url <url>)` - Extract published artifact versions from review messages
+- `is-verified (--change-id <change_id> | --review-url <url>)` - Check whether the Verified label is set on the latest patch set
+- `post-comment (--change-id <change_id> | --review-url <url>) <comment>` - Publish a top-level review comment
 - `resolve-change-number <url>` - Extract the change number from a Gerrit URL
 - `resolve-change-id <url>` - Resolve Gerrit URL to commit Change-Id via Gerrit API
+
+Every `<change_id>`-based command above requires exactly one of `--change-id` (the Gerrit change ID, numeric change number, or full `project~branch~Change-Id` triplet) or `--review-url` (a Gerrit change URL, from which the change number is resolved automatically). Passing neither, or both, is an error.
 
 ### Examples
 
@@ -82,25 +84,28 @@ go build -o gerrit-cli
 ./gerrit-cli keychain clear
 
 # Get change details
-./gerrit-cli get-change I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+./gerrit-cli get-change --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+
+# Get change details from a review URL instead
+./gerrit-cli get-change --review-url https://your-gerrit-instance.com/c/namespace/project/+/1234567
 
 # Get files in a change
-./gerrit-cli get-files I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+./gerrit-cli get-files --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 
 # Get commit message
-./gerrit-cli get-commit I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+./gerrit-cli get-commit --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 
 # Get diff for a specific file
-./gerrit-cli get-diff I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3 src/main.go
+./gerrit-cli get-diff --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3 src/main.go
 
 # Get review messages
-./gerrit-cli get-messages I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+./gerrit-cli get-messages --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 
 # Get full patch
-./gerrit-cli get-patch I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+./gerrit-cli get-patch --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 
 # Get MOAB numbers
-./gerrit-cli get-moab-numbers I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+./gerrit-cli get-moab-numbers --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 
 Example:
 ```
@@ -111,7 +116,7 @@ Example:
 ```
 
 # Get published artifact versions
-./gerrit-cli get-publish-version I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+./gerrit-cli get-publish-version --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 
 Example:
 ```
@@ -122,7 +127,7 @@ Example:
 ```
 
 # Check whether the Verified label is set on the latest patch set
-./gerrit-cli is-verified I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+./gerrit-cli is-verified --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 
 Example:
 ```
@@ -134,7 +139,7 @@ Example:
 ```
 
 # Publish a top-level review comment
-./gerrit-cli post-comment I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3 "Looks good to me"
+./gerrit-cli post-comment --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3 "Looks good to me"
 
 # Extract change number from Gerrit URL
 ./gerrit-cli resolve-change-number https://your-gerrit-instance.com/c/namespace/project/+/1234567

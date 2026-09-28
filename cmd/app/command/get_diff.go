@@ -7,13 +7,17 @@ import (
 )
 
 var getDiffCommand = Command{
-	usage:          "get-diff <change_id> <file_path>",
+	usage:          "get-diff (--change-id <change_id> | --review-url <url>) <file_path>",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		if len(args) < 2 {
-			return fmt.Errorf("ERROR: get-diff requires <change_id> <file_path>")
+		changeID, rest, err := parseChangeIDFlag("get-diff", args)
+		if err != nil {
+			return err
 		}
-		return client.getDiff(args[0], args[1])
+		if len(rest) < 1 {
+			return fmt.Errorf("ERROR: get-diff requires <file_path>")
+		}
+		return client.getDiff(changeID, rest[0])
 	},
 }
 

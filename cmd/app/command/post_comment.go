@@ -7,13 +7,17 @@ import (
 )
 
 var postCommentCommand = Command{
-	usage:          "post-comment <change_id> <comment>",
+	usage:          "post-comment (--change-id <change_id> | --review-url <url>) <comment>",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		if len(args) < 2 {
-			return fmt.Errorf("ERROR: post-comment requires <change_id> <comment>")
+		changeID, rest, err := parseChangeIDFlag("post-comment", args)
+		if err != nil {
+			return err
 		}
-		return client.postComment(args[0], strings.Join(args[1:], " "))
+		if len(rest) < 1 {
+			return fmt.Errorf("ERROR: post-comment requires <comment>")
+		}
+		return client.postComment(changeID, strings.Join(rest, " "))
 	},
 }
 
