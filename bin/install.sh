@@ -8,11 +8,7 @@ artifact="target/gerrit-cli"
 install_dir="${HOME}/.local/bin"
 install_path="${install_dir}/gerrit-cli"
 
-if [ ! -f "$artifact" ]; then
-  echo "Missing binary artifact: $artifact" >&2
-  echo "Building it now..." >&2
-  "$script_dir/build.sh"
-fi
+"$script_dir/build.sh"
 
 mkdir -p "$install_dir"
 cp "$artifact" "$install_path"
