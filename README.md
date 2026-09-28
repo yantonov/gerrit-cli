@@ -60,6 +60,7 @@ go build -o gerrit-cli
 - `get-patch <change_id>` - Get full patch
 - `get-moab-numbers <change_id>` - Extract MOAB numbers from review messages
 - `get-publish-version <change_id>` - Extract published artifact versions from review messages
+- `is-verified <change_id>` - Check whether the Verified label is set on the latest patch set
 - `post-comment <change_id> <comment>` - Publish a top-level review comment
 - `resolve-change-number <url>` - Extract the change number from a Gerrit URL
 - `resolve-change-id <url>` - Resolve Gerrit URL to commit Change-Id via Gerrit API
@@ -117,6 +118,18 @@ Example:
 {
   "CSHARP": "1.1948302.1.44265-review",
   "JAVA": "2.5550123.1.999-review"
+}
+```
+
+# Check whether the Verified label is set on the latest patch set
+./gerrit-cli is-verified I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+
+Example:
+```
+{
+  "by": "svc-moab2gerrit",
+  "status": "verified",
+  "verified": true
 }
 ```
 
