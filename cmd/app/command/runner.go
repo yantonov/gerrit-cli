@@ -3,6 +3,8 @@ package command
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 type Command struct {
@@ -25,6 +27,7 @@ var commandNames = []string{
 	"post-comment",
 	"resolve-change-number",
 	"resolve-change-id",
+	"shell",
 }
 
 var commands = map[string]Command{
@@ -41,16 +44,39 @@ var commands = map[string]Command{
 	"post-comment":          postCommentCommand,
 	"resolve-change-number": resolveChangeNumberCommand,
 	"resolve-change-id":     resolveChangeIDCommand,
+	"shell":                 shellCommand,
+}
+
+const defaultProgramName = "gerrit-cli"
+
+// programName is what the usage lines and the shell completion script tell
+// the user to type: the binary as it was invoked, without the directory it
+// was found in. Windows invokes it with the .exe extension, which is not
+// part of the name to type.
+func programName(args []string) string {
+	if len(args) == 0 {
+		return defaultProgramName
+	}
+
+	name := filepath.Base(args[0])
+	if extension := filepath.Ext(name); strings.EqualFold(extension, ".exe") {
+		name = strings.TrimSuffix(name, extension)
+	}
+
+	// filepath.Base answers "." for an empty path and the separator for a bare
+	// root, neither of which is a name anyone can type.
+	if name == "" || name == "." || name == string(filepath.Separator) {
+		return defaultProgramName
+	}
+
+	return name
 }
 
 func Run(args []string) {
-	programName := "gerrit-cli"
-	if len(args) > 0 {
-		programName = args[0]
-	}
+	program := programName(args)
 
 	if len(args) < 2 {
-		printUsage(programName)
+		printUsage(program)
 		os.Exit(1)
 	}
 
@@ -58,7 +84,7 @@ func Run(args []string) {
 	commandArgs := args[2:]
 
 	if commandName == "--help" || commandName == "-h" || commandName == "help" {
-		printUsage(programName)
+		printUsage(program)
 		return
 	}
 

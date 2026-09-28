@@ -64,6 +64,8 @@ go build -o gerrit-cli
 - `post-comment (--change-id <change_id> | --review-url <url>) <comment>` - Publish a top-level review comment
 - `resolve-change-number <url>` - Extract the change number from a Gerrit URL
 - `resolve-change-id <url>` - Resolve Gerrit URL to commit Change-Id via Gerrit API
+- `shell show` - Print the bash completion script for `gerrit-cli`
+- `shell install` - Install the bash completion script to where bash loads it from automatically
 
 Every `<change_id>`-based command above requires exactly one of `--change-id` (the Gerrit change ID, numeric change number, or full `project~branch~Change-Id` triplet) or `--review-url` (a Gerrit change URL, from which the change number is resolved automatically). Passing neither, or both, is an error.
 
@@ -146,4 +148,15 @@ Example:
 
 # Resolve Gerrit URL to commit Change-Id via Gerrit API
 ./gerrit-cli resolve-change-id https://your-gerrit-instance.com/c/namespace/project/+/1234567
+
+# Print the bash completion script (review before trusting it, or source it directly)
+. <(./gerrit-cli shell show)
+
+# Install the completion script to wherever bash will load it from automatically
+./gerrit-cli shell install
 ```
+
+Shell completion is only supported for bash, detected through `$SHELL`. `shell install` writes to
+`~/.local/share/bash-completion/completions/gerrit-cli`, or, under Git for Windows' bundled MSYS bash
+(detected through `$MSYSTEM`), to `~/bash_completion.d/gerrit-cli.bash`, since that is the only path
+MSYS bash's own `git-prompt.sh` auto-sources.
