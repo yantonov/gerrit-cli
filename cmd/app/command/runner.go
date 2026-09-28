@@ -88,6 +88,11 @@ func Run(args []string) {
 		return
 	}
 
+	if commandName == "--version" || commandName == "version" {
+		printVersion()
+		return
+	}
+
 	command, ok := commands[commandName]
 	if !ok {
 		fmt.Fprintf(os.Stderr, "ERROR: Unknown command '%s'\n", commandName)

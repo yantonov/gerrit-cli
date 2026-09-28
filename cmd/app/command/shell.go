@@ -176,6 +176,7 @@ _gerrit_cli_completion() {
     if [[ "$cur" == --* ]]; then
         local flags="--help"
         case "$p0" in
+            "") flags="$flags --version" ;;
             get-change | get-files | get-commit | get-diff | get-messages | get-patch | \
             get-moab-numbers | get-publish-version | is-verified | post-comment)
                 flags="$flags --change-id --review-url"

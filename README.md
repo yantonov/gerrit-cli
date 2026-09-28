@@ -23,6 +23,7 @@ Most commands are read-only, with a small write command for publishing review co
   - resolve-change-number
   - resolve-change-id
   - [shell](#shell)
+  - [--version](#--version)
 
 ## Setup
 
@@ -56,7 +57,7 @@ The keychain is the macOS Keychain, the Windows Credential Manager, or the freed
 ## Build
 
 ```bash
-go build -o gerrit-cli
+sh bin/build.sh        # -> target/gerrit-cli, with the version stamped from `git describe`
 ```
 
 ## Usage
@@ -160,3 +161,11 @@ Shell completion is only supported for bash, detected through `$SHELL`. `shell i
 `~/.local/share/bash-completion/completions/gerrit-cli`, or, under Git for Windows' bundled MSYS bash
 (detected through `$MSYSTEM`), to `~/bash_completion.d/gerrit-cli.bash`, since that is the only path
 MSYS bash's own `git-prompt.sh` auto-sources.
+
+### --version
+
+`--version` (or `version`) - Print the version this binary was built from, plus the Go version and platform
+
+```bash
+./gerrit-cli --version
+```
