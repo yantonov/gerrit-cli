@@ -9,7 +9,7 @@ Most commands are read-only, with a small write command for publishing review co
 - [Setup](#setup)
 - [Build](#build)
 - [Usage](#usage)
-  - [Keychain](#keychain)
+  - [keychain](#keychain)
   - [get-change](#get-change)
   - [get-files](#get-files)
   - [get-commit](#get-commit)
@@ -49,7 +49,7 @@ gerrit-cli keychain set password
 # Password: <hidden prompt>
 ```
 
-Credentials are stored per Gerrit host, so switching `GERRIT_URL` to a different instance uses a different set of stored credentials. See [Keychain](#keychain) below for the full set of `keychain` subcommands.
+Credentials are stored per Gerrit host, so switching `GERRIT_URL` to a different instance uses a different set of stored credentials. See [keychain](#keychain) below for the full set of `keychain` subcommands.
 
 The keychain is the macOS Keychain, the Windows Credential Manager, or the freedesktop Secret Service on Linux. If none is reachable, every command that touches credentials fails with a message naming the platform and how to get a working store - on Linux that usually means starting a keyring daemon such as gnome-keyring, and running under a D-Bus session (`dbus-run-session -- gerrit-cli <command>`) when connected over SSH.
 
@@ -67,7 +67,7 @@ go build -o gerrit-cli
 
 Every `<change_id>`-based command below requires exactly one of `--change-id` (the Gerrit change ID, numeric change number, or full `project~branch~Change-Id` triplet) or `--review-url` (a Gerrit change URL, from which the change number is resolved automatically). Passing neither, or both, is an error.
 
-### Keychain
+### keychain
 
 Manage the credentials used to authenticate against the host from `GERRIT_URL`.
 
