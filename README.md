@@ -10,18 +10,18 @@ Most commands are read-only, with a small write command for publishing review co
 - [Build](#build)
 - [Usage](#usage)
   - [keychain](#keychain)
-  - [get-change](#get-change)
-  - [get-files](#get-files)
-  - [get-commit](#get-commit)
-  - [get-diff](#get-diff)
-  - [get-messages](#get-messages)
-  - [get-patch](#get-patch)
+  - get-change
+  - get-files
+  - get-commit
+  - get-diff
+  - get-messages
+  - get-patch
   - [get-moab-numbers](#get-moab-numbers)
   - [get-publish-version](#get-publish-version)
   - [is-verified](#is-verified)
-  - [post-comment](#post-comment)
-  - [resolve-change-number](#resolve-change-number)
-  - [resolve-change-id](#resolve-change-id)
+  - post-comment
+  - resolve-change-number
+  - resolve-change-id
   - [shell](#shell)
 
 ## Setup
@@ -92,57 +92,6 @@ Manage the credentials used to authenticate against the host from `GERRIT_URL`.
 ./gerrit-cli keychain clear
 ```
 
-### get-change
-
-`get-change (--change-id <change_id> | --review-url <url>)` - Get detailed change information
-
-```bash
-./gerrit-cli get-change --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
-
-# Or from a review URL instead
-./gerrit-cli get-change --review-url https://your-gerrit-instance.com/c/namespace/project/+/1234567
-```
-
-### get-files
-
-`get-files (--change-id <change_id> | --review-url <url>)` - Get list of files in a change
-
-```bash
-./gerrit-cli get-files --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
-```
-
-### get-commit
-
-`get-commit (--change-id <change_id> | --review-url <url>)` - Get commit message
-
-```bash
-./gerrit-cli get-commit --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
-```
-
-### get-diff
-
-`get-diff (--change-id <change_id> | --review-url <url>) <file_path>` - Get file diff
-
-```bash
-./gerrit-cli get-diff --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3 src/main.go
-```
-
-### get-messages
-
-`get-messages (--change-id <change_id> | --review-url <url>)` - Get review messages
-
-```bash
-./gerrit-cli get-messages --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
-```
-
-### get-patch
-
-`get-patch (--change-id <change_id> | --review-url <url>)` - Get full patch
-
-```bash
-./gerrit-cli get-patch --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
-```
-
 ### get-moab-numbers
 
 `get-moab-numbers (--change-id <change_id> | --review-url <url>)` - Extract MOAB numbers from review messages
@@ -190,30 +139,6 @@ Example output:
   "status": "verified",
   "verified": true
 }
-```
-
-### post-comment
-
-`post-comment (--change-id <change_id> | --review-url <url>) <comment>` - Publish a top-level review comment
-
-```bash
-./gerrit-cli post-comment --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3 "Looks good to me"
-```
-
-### resolve-change-number
-
-`resolve-change-number <url>` - Extract the change number from a Gerrit URL
-
-```bash
-./gerrit-cli resolve-change-number https://your-gerrit-instance.com/c/namespace/project/+/1234567
-```
-
-### resolve-change-id
-
-`resolve-change-id <url>` - Resolve Gerrit URL to commit Change-Id via Gerrit API
-
-```bash
-./gerrit-cli resolve-change-id https://your-gerrit-instance.com/c/namespace/project/+/1234567
 ```
 
 ### shell
