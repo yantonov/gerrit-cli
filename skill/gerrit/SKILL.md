@@ -24,8 +24,8 @@ Every `<change_id>`-based command below requires exactly one of `--change-id` or
 - `diff (--change-id <id> | --review-url <url>) <file_path>` - diff for a file
 - `messages (--change-id <id> | --review-url <url>)` - review messages
 - `patch (--change-id <id> | --review-url <url>)` - full patch
-- `get-moab-numbers (--change-id <id> | --review-url <url>)` - MOAB numbers from review messages
-- `get-publish-version (--change-id <id> | --review-url <url>)` - published artifact versions from review messages
+- `moab-numbers (--change-id <id> | --review-url <url>)` - MOAB numbers from review messages
+- `publish-version (--change-id <id> | --review-url <url>)` - published artifact versions from review messages
 - `is-verified (--change-id <id> | --review-url <url>)` - whether the Verified label is set on the latest patch set
 - `resolve-change-number <url>` - change number from a Gerrit URL
 - `query --query <query> [--limit <n>]` - search changes by a Gerrit query string (e.g. a JIRA key, project+branch filters, free text)

@@ -8,10 +8,10 @@ import (
 )
 
 var getPublishVersionCommand = Command{
-	usage:          "get-publish-version (--change-id <change_id> | --review-url <url>)",
+	usage:          "publish-version (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		changeID, _, err := parseChangeIDFlag("get-publish-version", args)
+		changeID, _, err := parseChangeIDFlag("publish-version", args)
 		if err != nil {
 			return err
 		}

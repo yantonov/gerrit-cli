@@ -178,7 +178,7 @@ _gerrit_cli_completion() {
         case "$p0" in
             "") flags="$flags --version" ;;
             detail | files | commit | diff | messages | patch | \
-            get-moab-numbers | get-publish-version | is-verified | review)
+            moab-numbers | publish-version | is-verified | review)
                 flags="$flags --change-id --review-url"
                 ;;
             query)
@@ -194,7 +194,7 @@ _gerrit_cli_completion() {
     local candidates=""
     case "${#path[@]}" in
         0)
-            candidates="keychain detail files commit diff messages patch get-moab-numbers get-publish-version is-verified query review resolve-change-number resolve-change-id shell"
+            candidates="keychain detail files commit diff messages patch moab-numbers publish-version is-verified query review resolve-change-number resolve-change-id shell"
             ;;
         1)
             case "$p0" in

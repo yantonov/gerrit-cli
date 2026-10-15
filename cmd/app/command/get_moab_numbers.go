@@ -7,10 +7,10 @@ import (
 )
 
 var getMoabNumbersCommand = Command{
-	usage:          "get-moab-numbers (--change-id <change_id> | --review-url <url>)",
+	usage:          "moab-numbers (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		changeID, _, err := parseChangeIDFlag("get-moab-numbers", args)
+		changeID, _, err := parseChangeIDFlag("moab-numbers", args)
 		if err != nil {
 			return err
 		}

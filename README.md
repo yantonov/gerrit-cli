@@ -17,8 +17,8 @@ Most commands are read-only, with a small write command for publishing review co
   - diff
   - messages
   - patch
-  - [get-moab-numbers](#get-moab-numbers)
-  - [get-publish-version](#get-publish-version)
+  - [moab-numbers](#moab-numbers)
+  - [publish-version](#publish-version)
   - [is-verified](#is-verified)
   - [query](#query)
   - review
@@ -99,12 +99,12 @@ Manage the credentials used to authenticate against the host from `GERRIT_URL`.
 ./gerrit-cli keychain clear
 ```
 
-### get-moab-numbers
+### moab-numbers
 
-`get-moab-numbers (--change-id <change_id> | --review-url <url>)` - Extract MOAB numbers from review messages
+`moab-numbers (--change-id <change_id> | --review-url <url>)` - Extract MOAB numbers from review messages
 
 ```bash
-./gerrit-cli get-moab-numbers --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+./gerrit-cli moab-numbers --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 ```
 
 Example output:
@@ -115,12 +115,12 @@ Example output:
 }
 ```
 
-### get-publish-version
+### publish-version
 
-`get-publish-version (--change-id <change_id> | --review-url <url>)` - Extract published artifact versions from review messages
+`publish-version (--change-id <change_id> | --review-url <url>)` - Extract published artifact versions from review messages
 
 ```bash
-./gerrit-cli get-publish-version --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
+./gerrit-cli publish-version --change-id I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3
 ```
 
 Example output:
