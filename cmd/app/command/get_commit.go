@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-var getCommitCommand = Command{
-	usage:          "get-commit (--change-id <change_id> | --review-url <url>)",
+var commitCommand = Command{
+	usage:          "commit (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		changeID, _, err := parseChangeIDFlag("get-commit", args)
+		changeID, _, err := parseChangeIDFlag("commit", args)
 		if err != nil {
 			return err
 		}

@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-var getMessagesCommand = Command{
-	usage:          "get-messages (--change-id <change_id> | --review-url <url>)",
+var messagesCommand = Command{
+	usage:          "messages (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		changeID, _, err := parseChangeIDFlag("get-messages", args)
+		changeID, _, err := parseChangeIDFlag("messages", args)
 		if err != nil {
 			return err
 		}

@@ -6,16 +6,16 @@ import (
 	"net/url"
 )
 
-var getDiffCommand = Command{
-	usage:          "get-diff (--change-id <change_id> | --review-url <url>) <file_path>",
+var diffCommand = Command{
+	usage:          "diff (--change-id <change_id> | --review-url <url>) <file_path>",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		changeID, rest, err := parseChangeIDFlag("get-diff", args)
+		changeID, rest, err := parseChangeIDFlag("diff", args)
 		if err != nil {
 			return err
 		}
 		if len(rest) < 1 {
-			return fmt.Errorf("ERROR: get-diff requires <file_path>")
+			return fmt.Errorf("ERROR: diff requires <file_path>")
 		}
 		return client.getDiff(changeID, rest[0])
 	},

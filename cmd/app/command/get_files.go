@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-var getFilesCommand = Command{
-	usage:          "get-files (--change-id <change_id> | --review-url <url>)",
+var filesCommand = Command{
+	usage:          "files (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		changeID, _, err := parseChangeIDFlag("get-files", args)
+		changeID, _, err := parseChangeIDFlag("files", args)
 		if err != nil {
 			return err
 		}

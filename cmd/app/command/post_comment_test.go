@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestPostCommentPublishesReviewMessage(t *testing.T) {
+func TestPostReviewPublishesReviewMessage(t *testing.T) {
 	var gotMethod, gotPath, gotAuth, gotContentType, gotMessage string
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -38,10 +38,10 @@ func TestPostCommentPublishesReviewMessage(t *testing.T) {
 
 	client := &GerritClient{auth: "token", baseURL: server.URL}
 	output, err := captureStdout(t, func() error {
-		return client.postComment("Iabc123", "Looks good")
+		return client.postReview("Iabc123", "Looks good")
 	})
 	if err != nil {
-		t.Fatalf("postComment returned error: %v", err)
+		t.Fatalf("postReview returned error: %v", err)
 	}
 
 	if gotMethod != http.MethodPost {
@@ -59,12 +59,12 @@ func TestPostCommentPublishesReviewMessage(t *testing.T) {
 	if gotMessage != "Looks good" {
 		t.Fatalf("message = %q, want %q", gotMessage, "Looks good")
 	}
-	if output != "[OK] Comment is successfully posted\n" {
+	if output != "[OK] Review is successfully posted\n" {
 		t.Fatalf("output = %q, want success message", output)
 	}
 }
 
-func TestPostCommentReturnsStatusCodeError(t *testing.T) {
+func TestPostReviewReturnsStatusCodeError(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "failed")
@@ -73,12 +73,12 @@ func TestPostCommentReturnsStatusCodeError(t *testing.T) {
 
 	client := &GerritClient{auth: "token", baseURL: server.URL}
 	output, err := captureStdout(t, func() error {
-		return client.postComment("Iabc123", "Looks good")
+		return client.postReview("Iabc123", "Looks good")
 	})
 	if err == nil {
-		t.Fatal("postComment returned nil error for non-200 response")
+		t.Fatal("postReview returned nil error for non-200 response")
 	}
-	if err.Error() != "Cannot post comment, status code=500" {
+	if err.Error() != "Cannot post review, status code=500" {
 		t.Fatalf("error = %q, want status code error", err)
 	}
 	if output != "" {
@@ -86,10 +86,10 @@ func TestPostCommentReturnsStatusCodeError(t *testing.T) {
 	}
 }
 
-func TestPostCommentRejectsEmptyComment(t *testing.T) {
+func TestPostReviewRejectsEmptyMessage(t *testing.T) {
 	client := &GerritClient{auth: "token", baseURL: "http://example.com"}
-	if err := client.postComment("Iabc123", " \t\n"); err == nil {
-		t.Fatal("postComment returned nil error for empty comment")
+	if err := client.postReview("Iabc123", " \t\n"); err == nil {
+		t.Fatal("postReview returned nil error for empty message")
 	}
 }
 

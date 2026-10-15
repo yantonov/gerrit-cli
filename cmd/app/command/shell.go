@@ -177,12 +177,12 @@ _gerrit_cli_completion() {
         local flags="--help"
         case "$p0" in
             "") flags="$flags --version" ;;
-            get-change | get-files | get-commit | get-diff | get-messages | get-patch | \
-            get-moab-numbers | get-publish-version | is-verified | post-comment)
+            detail | files | commit | diff | messages | patch | \
+            get-moab-numbers | get-publish-version | is-verified | review)
                 flags="$flags --change-id --review-url"
                 ;;
-            query-changes)
-                flags="$flags --query"
+            query)
+                flags="$flags --query --limit"
                 ;;
         esac
         COMPREPLY=( $(compgen -W "$flags" -- "$cur") )
@@ -194,7 +194,7 @@ _gerrit_cli_completion() {
     local candidates=""
     case "${#path[@]}" in
         0)
-            candidates="keychain get-change get-files get-commit get-diff get-messages get-patch get-moab-numbers get-publish-version is-verified query-changes post-comment resolve-change-number resolve-change-id shell"
+            candidates="keychain detail files commit diff messages patch get-moab-numbers get-publish-version is-verified query review resolve-change-number resolve-change-id shell"
             ;;
         1)
             case "$p0" in

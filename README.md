@@ -11,17 +11,17 @@ Most commands are read-only, with a small write command for publishing review co
 - [Claude Code Skill](#claude-code-skill)
 - [Usage](#usage)
   - [keychain](#keychain)
-  - get-change
-  - get-files
-  - get-commit
-  - get-diff
-  - get-messages
-  - get-patch
+  - detail
+  - files
+  - commit
+  - diff
+  - messages
+  - patch
   - [get-moab-numbers](#get-moab-numbers)
   - [get-publish-version](#get-publish-version)
   - [is-verified](#is-verified)
-  - [query-changes](#query-changes)
-  - post-comment
+  - [query](#query)
+  - review
   - resolve-change-number
   - resolve-change-id
   - [shell](#shell)
@@ -148,13 +148,14 @@ Example output:
 }
 ```
 
-### query-changes
+### query
 
-`query-changes --query <query>` - Search changes by a Gerrit query string
+`query --query <query> [--limit <n>]` - Search changes by a Gerrit query string
 
 ```bash
-./gerrit-cli query-changes --query "project:namespace/project+branch:main+status:open"
-./gerrit-cli query-changes --query "QUEUE-123"
+./gerrit-cli query --query "project:namespace/project+branch:main+status:open"
+./gerrit-cli query --query "QUEUE-123"
+./gerrit-cli query --query "project:my-project+branch:main+status:open" --limit 10
 ```
 
 Example output:

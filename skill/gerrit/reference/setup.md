@@ -32,6 +32,6 @@ If `Username` or `Password` shows `not set`, re-run the corresponding `keychain 
 ## Troubleshooting
 
 - **`Host` is wrong or missing** — `GERRIT_URL` isn't exported in the current shell; re-run `export GERRIT_URL=...`.
-- **Auth errors on commands (`get-change`, etc.)** — run `gerrit-cli keychain status` to confirm credentials are set, then re-set them if stale (e.g. after a password rotation).
+- **Auth errors on commands (`detail`, `files`, etc.)** — run `gerrit-cli keychain status` to confirm credentials are set, then re-set them if stale (e.g. after a password rotation).
 - **`resolve-change-number` / `resolve-change-id` fail on a valid URL** — confirm the URL's host matches `GERRIT_URL`; the CLI won't resolve URLs from a different Gerrit instance.
 - **A `--change-id`/`--review-url` command errors with "requires --change-id or --review-url" or "specify either ... not both"** — exactly one of the two flags must be passed; check for a missing or duplicated flag.

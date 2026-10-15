@@ -3,7 +3,7 @@ package command
 import "testing"
 
 func TestParseChangeIDFlagWithChangeID(t *testing.T) {
-	changeID, rest, err := parseChangeIDFlag("get-change", []string{"--change-id", "Iabc123"})
+	changeID, rest, err := parseChangeIDFlag("detail", []string{"--change-id", "Iabc123"})
 	if err != nil {
 		t.Fatalf("parseChangeIDFlag returned error: %v", err)
 	}
@@ -16,7 +16,7 @@ func TestParseChangeIDFlagWithChangeID(t *testing.T) {
 }
 
 func TestParseChangeIDFlagWithChangeIDEqualsForm(t *testing.T) {
-	changeID, _, err := parseChangeIDFlag("get-change", []string{"--change-id=Iabc123"})
+	changeID, _, err := parseChangeIDFlag("detail", []string{"--change-id=Iabc123"})
 	if err != nil {
 		t.Fatalf("parseChangeIDFlag returned error: %v", err)
 	}
@@ -27,7 +27,7 @@ func TestParseChangeIDFlagWithChangeIDEqualsForm(t *testing.T) {
 
 func TestParseChangeIDFlagWithReviewURL(t *testing.T) {
 	changeID, rest, err := parseChangeIDFlag(
-		"get-diff",
+		"diff",
 		[]string{"--review-url", "https://gerrit.example.com/c/namespace/project/+/1234567", "path/to/file"},
 	)
 	if err != nil {
@@ -43,7 +43,7 @@ func TestParseChangeIDFlagWithReviewURL(t *testing.T) {
 
 func TestParseChangeIDFlagWithReviewURLEqualsForm(t *testing.T) {
 	changeID, _, err := parseChangeIDFlag(
-		"get-change",
+		"detail",
 		[]string{"--review-url=https://gerrit.example.com/c/namespace/project/+/1234567"},
 	)
 	if err != nil {
@@ -55,14 +55,14 @@ func TestParseChangeIDFlagWithReviewURLEqualsForm(t *testing.T) {
 }
 
 func TestParseChangeIDFlagRequiresOneOfChangeIDOrReviewURL(t *testing.T) {
-	if _, _, err := parseChangeIDFlag("get-change", []string{}); err == nil {
+	if _, _, err := parseChangeIDFlag("detail", []string{}); err == nil {
 		t.Fatal("parseChangeIDFlag returned nil error when neither flag was given")
 	}
 }
 
 func TestParseChangeIDFlagRejectsBothChangeIDAndReviewURL(t *testing.T) {
 	_, _, err := parseChangeIDFlag(
-		"get-change",
+		"detail",
 		[]string{"--change-id", "Iabc123", "--review-url", "https://gerrit.example.com/c/namespace/project/+/1234567"},
 	)
 	if err == nil {
@@ -71,17 +71,17 @@ func TestParseChangeIDFlagRejectsBothChangeIDAndReviewURL(t *testing.T) {
 }
 
 func TestParseChangeIDFlagRejectsUnresolvableReviewURL(t *testing.T) {
-	_, _, err := parseChangeIDFlag("get-change", []string{"--review-url", "https://gerrit.example.com/plugins/gitiles/project"})
+	_, _, err := parseChangeIDFlag("detail", []string{"--review-url", "https://gerrit.example.com/plugins/gitiles/project"})
 	if err == nil {
 		t.Fatal("parseChangeIDFlag returned nil error for a URL without a change number")
 	}
 }
 
 func TestParseChangeIDFlagRejectsMissingValue(t *testing.T) {
-	if _, _, err := parseChangeIDFlag("get-change", []string{"--change-id"}); err == nil {
+	if _, _, err := parseChangeIDFlag("detail", []string{"--change-id"}); err == nil {
 		t.Fatal("parseChangeIDFlag returned nil error for --change-id with no value")
 	}
-	if _, _, err := parseChangeIDFlag("get-change", []string{"--review-url"}); err == nil {
+	if _, _, err := parseChangeIDFlag("detail", []string{"--review-url"}); err == nil {
 		t.Fatal("parseChangeIDFlag returned nil error for --review-url with no value")
 	}
 }

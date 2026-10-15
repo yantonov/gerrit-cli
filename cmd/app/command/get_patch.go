@@ -6,11 +6,11 @@ import (
 	"fmt"
 )
 
-var getPatchCommand = Command{
-	usage:          "get-patch (--change-id <change_id> | --review-url <url>)",
+var patchCommand = Command{
+	usage:          "patch (--change-id <change_id> | --review-url <url>)",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		changeID, _, err := parseChangeIDFlag("get-patch", args)
+		changeID, _, err := parseChangeIDFlag("patch", args)
 		if err != nil {
 			return err
 		}

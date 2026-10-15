@@ -6,20 +6,23 @@ import (
 	"net/url"
 )
 
-var queryChangesCommand = Command{
-	usage:          "query-changes --query <query>",
+var queryCommand = Command{
+	usage:          "query --query <query> [--limit <n>]",
 	requiresClient: true,
 	run: func(client *GerritClient, args []string) error {
-		query, _, err := parseQueryFlag("query-changes", args)
+		query, limit, err := parseQueryFlag("query", args)
 		if err != nil {
 			return err
 		}
-		return client.queryChanges(query)
+		return client.queryChanges(query, limit)
 	},
 }
 
-func (c *GerritClient) queryChanges(query string) error {
+func (c *GerritClient) queryChanges(query, limit string) error {
 	endpoint := fmt.Sprintf("changes/?q=%s", url.QueryEscape(query))
+	if limit != "" {
+		endpoint += "&n=" + url.QueryEscape(limit)
+	}
 	response, err := c.get(endpoint)
 	if err != nil {
 		return err

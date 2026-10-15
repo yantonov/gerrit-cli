@@ -5,30 +5,37 @@ import (
 	"strings"
 )
 
-// parseQueryFlag extracts the --query value from args.
-func parseQueryFlag(commandName string, args []string) (string, []string, error) {
-	var query string
-	rest := make([]string, 0, len(args))
+// parseQueryFlag extracts --query and --limit values from args.
+func parseQueryFlag(commandName string, args []string) (string, string, error) {
+	var query, limit string
 
 	for i := 0; i < len(args); i++ {
 		arg := args[i]
 		switch {
 		case arg == "--query":
 			if i+1 >= len(args) {
-				return "", nil, fmt.Errorf("ERROR: %s: --query requires a value", commandName)
+				return "", "", fmt.Errorf("ERROR: %s: --query requires a value", commandName)
 			}
 			query = args[i+1]
 			i++
 		case strings.HasPrefix(arg, "--query="):
 			query = strings.TrimPrefix(arg, "--query=")
+		case arg == "--limit":
+			if i+1 >= len(args) {
+				return "", "", fmt.Errorf("ERROR: %s: --limit requires a value", commandName)
+			}
+			limit = args[i+1]
+			i++
+		case strings.HasPrefix(arg, "--limit="):
+			limit = strings.TrimPrefix(arg, "--limit=")
 		default:
-			rest = append(rest, arg)
+			// unrecognized argument — skip
 		}
 	}
 
 	if query == "" {
-		return "", nil, fmt.Errorf("ERROR: %s requires --query", commandName)
+		return "", "", fmt.Errorf("ERROR: %s requires --query", commandName)
 	}
 
-	return query, rest, nil
+	return query, limit, nil
 }
