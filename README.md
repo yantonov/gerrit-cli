@@ -20,6 +20,7 @@ Most commands are read-only, with a small write command for publishing review co
   - [get-moab-numbers](#get-moab-numbers)
   - [get-publish-version](#get-publish-version)
   - [is-verified](#is-verified)
+  - [query-changes](#query-changes)
   - post-comment
   - resolve-change-number
   - resolve-change-id
@@ -146,6 +147,32 @@ Example output:
   "verified": true
 }
 ```
+
+### query-changes
+
+`query-changes --query <query>` - Search changes by a Gerrit query string
+
+```bash
+./gerrit-cli query-changes --query "project:namespace/project+branch:main+status:open"
+./gerrit-cli query-changes --query "QUEUE-123"
+```
+
+Example output:
+```json
+[
+  {
+    "change_id": "I3ea8ccae945a1a1a0c52aab84bb1d2c1830bb2e3",
+    "number": 1234567,
+    "subject": "Fix the thing",
+    "project": "namespace/project",
+    "branch": "main",
+    "status": "NEW",
+    "owner": "John Doe"
+  }
+]
+```
+
+The `--query` value can be any Gerrit search operator: project, branch, status, message, owner, reviewer, a JIRA key, or arbitrary text. See [Gerrit search docs](https://gerrit-review.googlesource.com/Documentation/user-search.html) for the full query syntax.
 
 ### shell
 

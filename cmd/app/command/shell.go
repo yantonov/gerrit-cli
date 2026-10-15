@@ -181,6 +181,9 @@ _gerrit_cli_completion() {
             get-moab-numbers | get-publish-version | is-verified | post-comment)
                 flags="$flags --change-id --review-url"
                 ;;
+            query-changes)
+                flags="$flags --query"
+                ;;
         esac
         COMPREPLY=( $(compgen -W "$flags" -- "$cur") )
         return 0
@@ -191,7 +194,7 @@ _gerrit_cli_completion() {
     local candidates=""
     case "${#path[@]}" in
         0)
-            candidates="keychain get-change get-files get-commit get-diff get-messages get-patch get-moab-numbers get-publish-version is-verified post-comment resolve-change-number resolve-change-id shell"
+            candidates="keychain get-change get-files get-commit get-diff get-messages get-patch get-moab-numbers get-publish-version is-verified query-changes post-comment resolve-change-number resolve-change-id shell"
             ;;
         1)
             case "$p0" in
