@@ -300,7 +300,7 @@ func withStdinInput(t *testing.T, input string, fn func()) {
 
 	go func() {
 		defer writer.Close()
-		writer.WriteString(input)
+		_, _ = writer.WriteString(input)
 	}()
 
 	fn()
