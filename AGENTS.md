@@ -31,7 +31,7 @@ A feature is done only when:
 ## Hard constraints (MUST / MUST NOT)
 1. MUST: use HTTP Basic auth with credentials from the OS keychain for every Gerrit API call.
 2. MUST: keep every credential in `GERRIT_URL` and the OS keychain. Never write them to a file.
-3. MUST: when you change `skill/gerrit/`, update its reference docs at the same time.
+3. MUST: when you change `skills/gerrit/`, update its reference docs at the same time.
 
 ## Work rules
 - **WIP=1.** Claim one ticket at a time with `bl start <id>`. Close it with `bl done <id>` before you claim another.
@@ -46,4 +46,4 @@ A feature is done only when:
 - Deleting anything that cannot be recovered.
 
 ## Details (read when needed)
-- `skill/gerrit/reference/setup.md`: setup and keychain troubleshooting
+- `skills/gerrit/reference/setup.md`: setup and keychain troubleshooting

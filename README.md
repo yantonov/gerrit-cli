@@ -64,7 +64,7 @@ sh bin/build.sh        # -> target/gerrit-cli, with the version stamped from `gi
 
 ## Claude Code Skill
 
-This repo ships a [Claude Code](https://claude.com/claude-code) skill at [`skill/gerrit`](skill/gerrit/SKILL.md) that wraps `gerrit-cli` for read-only lookup of Gerrit changes - viewing diffs, commit messages, and review comments by change ID or URL. Setup and troubleshooting for the skill are documented in [`skill/gerrit/reference/setup.md`](skill/gerrit/reference/setup.md).
+This repo ships a [Claude Code](https://claude.com/claude-code) skill at [`skills/gerrit`](skills/gerrit/SKILL.md) that wraps `gerrit-cli` for read-only lookup of Gerrit changes - viewing diffs, commit messages, and review comments by change ID or URL. Setup and troubleshooting for the skill are documented in [`skills/gerrit/reference/setup.md`](skills/gerrit/reference/setup.md).
 
 ## Usage
 
