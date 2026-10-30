@@ -1,6 +1,6 @@
 module gerrit-cli
 
-go 1.25.0
+go 1.26.10
 
 require (
 	github.com/zalando/go-keyring v0.2.8
