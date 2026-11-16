@@ -42,7 +42,8 @@ build:
 install: build
 	@install_dir="$${HOME}/.local/bin"; \
 	mkdir -p "$$install_dir"; \
-	cp target/gerrit-cli "$$install_dir/gerrit-cli"; \
+	cp target/gerrit-cli "$$install_dir/gerrit-cli.tmp"; \
+	mv -f "$$install_dir/gerrit-cli.tmp" "$$install_dir/gerrit-cli"; \
 	chmod +x "$$install_dir/gerrit-cli"; \
 	echo "Installed: $$install_dir/gerrit-cli"
 
