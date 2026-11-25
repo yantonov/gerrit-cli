@@ -63,33 +63,42 @@ func NewGerritClient() (*GerritClient, error) {
 		return nil, fmt.Errorf("ERROR: no password set for host %s.\nGet credentials from your Gerrit instance at: /settings/#HTTPCredentials\nThen run: gerrit-cli keychain set password", host)
 	}
 
-	auth := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))
+	return &GerritClient{auth: basicAuth(username, password), baseURL: baseURL}, nil
+}
 
-	return &GerritClient{auth: auth, baseURL: baseURL}, nil
+func basicAuth(username, password string) string {
+	return base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))
 }
 
 func (c *GerritClient) get(endpoint string) (string, error) {
+	body, _, err := c.getWithStatus(endpoint)
+	return body, err
+}
+
+// getWithStatus returns the response body together with the HTTP status code,
+// for callers that must tell an auth failure from a successful empty result.
+func (c *GerritClient) getWithStatus(endpoint string) (string, int, error) {
 	url := fmt.Sprintf("%s/a/%s", c.baseURL, endpoint)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Basic %s", c.auth))
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return "", resp.StatusCode, err
 	}
 
 	result := string(body)
-	return stripGerritResponsePrefix(result), nil
+	return stripGerritResponsePrefix(result), resp.StatusCode, nil
 }
 
 func (c *GerritClient) post(endpoint string, payload interface{}) (int, error) {

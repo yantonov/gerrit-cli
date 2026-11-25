@@ -83,6 +83,7 @@ Manage the credentials used to authenticate against the host from `GERRIT_URL`.
 - `keychain remove <username|password>` - Remove a single stored value for the current host
 - `keychain clear` - Remove both stored values for the current host
 - `keychain status` - Show whether username/password are set for the current host (values are never printed)
+- `keychain check` - Verify the stored credentials against Gerrit and report the login status
 
 ```bash
 # Store credentials for the current GERRIT_URL host
@@ -91,6 +92,9 @@ Manage the credentials used to authenticate against the host from `GERRIT_URL`.
 
 # Check what's currently stored
 ./gerrit-cli keychain status
+
+# Check that Gerrit accepts the stored credentials
+./gerrit-cli keychain check
 
 # Remove a single stored value
 ./gerrit-cli keychain remove password
