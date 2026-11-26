@@ -15,6 +15,7 @@ type Command struct {
 
 var commandNames = []string{
 	"keychain",
+	"auth",
 	"detail",
 	"files",
 	"commit",
@@ -33,6 +34,7 @@ var commandNames = []string{
 
 var commands = map[string]Command{
 	"keychain":              keychainCommand,
+	"auth":                  authCommand,
 	"detail":                detailCommand,
 	"files":                 filesCommand,
 	"commit":                commitCommand,

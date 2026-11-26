@@ -34,7 +34,7 @@ If `Username` or `Password` shows `not set`, re-run the corresponding `keychain 
 `keychain status` reports only what is stored. To find out whether Gerrit accepts it, run:
 
 ```bash
-gerrit-cli keychain check
+gerrit-cli auth login
 ```
 
 Example output when the credentials are accepted:
@@ -48,6 +48,6 @@ If a value is missing, the command stops before contacting Gerrit and names the 
 ## Troubleshooting
 
 - **`Host` is wrong or missing** — `GERRIT_URL` isn't exported in the current shell; re-run `export GERRIT_URL=...`.
-- **Auth errors on commands (`detail`, `files`, etc.)** — run `gerrit-cli keychain check`. It reports the missing field, or that Gerrit rejects the stored credentials, so there is no need to guess by re-setting them. Re-set only what it names, e.g. after a password rotation.
+- **Auth errors on commands (`detail`, `files`, etc.)** — run `gerrit-cli auth login`. It reports the missing field, or that Gerrit rejects the stored credentials, so there is no need to guess by re-setting them. Re-set only what it names, e.g. after a password rotation.
 - **`resolve-change-number` / `resolve-change-id` fail on a valid URL** — confirm the URL's host matches `GERRIT_URL`; the CLI won't resolve URLs from a different Gerrit instance.
 - **A `--change-id`/`--review-url` command errors with "requires --change-id or --review-url" or "specify either ... not both"** — exactly one of the two flags must be passed; check for a missing or duplicated flag.

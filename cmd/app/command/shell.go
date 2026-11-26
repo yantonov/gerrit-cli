@@ -194,11 +194,12 @@ _gerrit_cli_completion() {
     local candidates=""
     case "${#path[@]}" in
         0)
-            candidates="keychain detail files commit diff messages patch moab-numbers publish-version is-verified query review resolve-change-number resolve-change-id shell"
+            candidates="keychain auth detail files commit diff messages patch moab-numbers publish-version is-verified query review resolve-change-number resolve-change-id shell"
             ;;
         1)
             case "$p0" in
                 keychain) candidates="set remove clear status" ;;
+                auth) candidates="login" ;;
                 shell) candidates="show install" ;;
             esac
             ;;

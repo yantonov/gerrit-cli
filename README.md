@@ -11,6 +11,7 @@ Most commands are read-only, with a small write command for publishing review co
 - [Claude Code Skill](#claude-code-skill)
 - [Usage](#usage)
   - [keychain](#keychain)
+  - [auth](#auth)
   - detail
   - files
   - commit
@@ -83,7 +84,6 @@ Manage the credentials used to authenticate against the host from `GERRIT_URL`.
 - `keychain remove <username|password>` - Remove a single stored value for the current host
 - `keychain clear` - Remove both stored values for the current host
 - `keychain status` - Show whether username/password are set for the current host (values are never printed)
-- `keychain check` - Verify the stored credentials against Gerrit and report the login status
 
 ```bash
 # Store credentials for the current GERRIT_URL host
@@ -93,14 +93,27 @@ Manage the credentials used to authenticate against the host from `GERRIT_URL`.
 # Check what's currently stored
 ./gerrit-cli keychain status
 
-# Check that Gerrit accepts the stored credentials
-./gerrit-cli keychain check
-
 # Remove a single stored value
 ./gerrit-cli keychain remove password
 
 # Remove both stored values
 ./gerrit-cli keychain clear
+```
+
+### auth
+
+Check whether Gerrit accepts the credentials stored for the host from `GERRIT_URL`.
+
+- `auth login` - Verify the stored credentials against Gerrit and report the login status
+
+```bash
+./gerrit-cli auth login
+```
+
+Example output when the credentials are accepted:
+
+```
+[OK] login succeeded for host your-gerrit-instance.com as Your Name
 ```
 
 ### moab-numbers
